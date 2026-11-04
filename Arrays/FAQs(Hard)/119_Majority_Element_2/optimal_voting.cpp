@@ -8,67 +8,96 @@ class Solution{
         //brute force 
         // O(N2)
         //better -- using hasing;
+        //optimal using voting of 2 candiadates;
             vector<int> majorityElementTwo(vector<int>& nums) {
                 if(nums.size()<2) return nums;
-                vector<int>ans;//max size will go upto 2;
+                vector<int>ans;
+                if(nums.size()==2 && nums[0]==nums[1]){
+                    ans.push_back(nums[0]);
+                    return ans;
+                }
                 //candidate 1                   candidate2
-                int value1=nums[0],count1=0, value2=nums[1],count2=0;
-                for(int i=2; i<nums.size();i++){
-                    if(value1==nums[i]){
+                int value1=INT_MIN, count1=0,           value2=INT_MIN, count2=0; 
+
+                for(auto ele : nums){
+                    if(count1>0 && count2>0){
+                        if(ele==value1){
+                            count1++;
+                            continue;
+                        }
+                        else if(ele==value2){
+                            count2++;
+                            continue;
+                        }
+                        else{
+                            count1--;
+                            count2--;
+                            //check
+                            if(count1==0) value1=INT_MIN;
+                            if(count2==0) value2=INT_MIN;
+                            //
+                            continue;
+                        }
+                    }
+                    else if(count1==0 && count2==0){
+                        value1=ele;
                         count1++;
                         continue;
                     }
-                    else if(value2==nums[i]){
-                        count2++;
-                        continue;
+                    else if(count1>0 && count2==0){
+                        if(ele==value1){
+                            count1++;
+                            continue;
+                        }else{
+                            value2=ele;
+                            count2++;
+                            continue;
+                        }
                     }
-                    else if(value1!=nums[i] && value2!=nums[i] && count1>0 && count2>0){
-                        count1--;
-                        count2--;
-                        continue;
-                    }
-                    else if(value1!=nums[i] && value2!=nums[i] && count1==0 && count2>0){
-                        value1=nums[i];
-                        count1++;
-                        continue;
-                    }
-                    else if(value1!=nums[i] && value2!=nums[i] && count1>0 && count2==0){
-                        value2=nums[i];
-                        count2++;
-                        continue;
-                    }
-                    else{
-                        cout<<"eroor in approach";
+                    else if(count1==0 && count2>0){
+                        if(ele==value2){
+                            count2++;
+                            continue;
+                        }else{
+                            value1=ele;
+                            count1++;
+                            continue;
+                        }
+                    }else{
+                        cout<<"wrong path of iteratin taken approach";
                         return ans;
                     }
                 }
+
+                //verification
+                count1=0,count2=0;
+                for(auto ele: nums){
+                    if(ele == value1 &&ele != value2){
+                        count1++;
+                        continue;
+                    }else if(ele == value2 && ele!=value1){
+                        count2++;
+                        continue;
+                    }else{
+                        continue;
+                    }
+                }
                 //
-                if(count1>0 && count2>0){
-                    ans.push_back(value1);
-                    ans.push_back(value2);
-                    sort(ans.begin(),ans.end());//constant as ans.size()<=2
-                    return ans;
-                }
-                else if(count1>0 && count2==0){
-                    ans.push_back(value1);
-                    return ans;
-                }
-                else if(count1==0 && count2>0){
-                    ans.push_back(value2);
-                    return ans;
-                }
-                else{
-                    return ans;
-                }
+                if(count1>(int)(nums.size()/3)) ans.push_back(value1);
+                if(count2>(int)(nums.size()/3)) ans.push_back(value2);
+                //
+                return ans;
             }
         //time complexity
-            //iteration-- O(N)
+            //iteration-- O(N) +(ON)
+            //O(N)
         //space complexity
             // O(1)
         //better -- self 
 };
 int main(){
-    vector<int> nums ={1, 2, 1, 1, 3, 2, 2};
+    // vector<int> nums ={4,1,2,3,4,4,3,2,1,4};
+    vector<int> nums ={1,2};
     Solution s;
     for(int ele: s.majorityElementTwo(nums)){
         cout<<ele<<", ";
